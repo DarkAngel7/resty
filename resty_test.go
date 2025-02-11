@@ -346,6 +346,12 @@ func createPostServer(t *testing.T) *httptest.Server {
 				w.WriteHeader(http.StatusOK)
 			case "/204-response":
 				w.WriteHeader(http.StatusNoContent)
+			case "/set-content-length":
+				hdrCl := r.Header.Get(hdrContentLengthKey)
+				qryCl := r.URL.Query().Get("cl")
+				assertEqual(t, hdrCl, qryCl)
+
+				w.WriteHeader(http.StatusOK)
 			}
 		}
 	})

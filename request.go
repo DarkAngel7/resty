@@ -70,6 +70,13 @@ type Request struct {
 	IsRetryDefaultConditions   bool
 	AllowNonIdempotentRetry    bool
 
+	// ContentLength the default value is -1, which indicates that the length is unknown.
+	//
+	// By default Resty will set content length for *[bytes.Buffer], *[bytes.Reader], and *[strings.Reader].
+	//
+	// Use [Request.SetContentLength] method to set the explicit content length of the request.
+	ContentLength int64
+
 	// RetryTraceID provides GUID for retry count > 0
 	RetryTraceID string
 
@@ -82,7 +89,6 @@ type Request struct {
 	credentials         *credentials
 	isMultiPart         bool
 	isFormData          bool
-	setContentLength    bool
 	jsonEscapeHTML      bool
 	ctx                 context.Context
 	ctxCancelFunc       context.CancelFunc
@@ -587,16 +593,12 @@ func (r *Request) SetMultipartBoundary(boundary string) *Request {
 	return r
 }
 
-// SetContentLength method sets the current request's HTTP header `Content-Length` value.
-// By default, Resty won't set `Content-Length`.
+// SetContentLength method sets the content length for the request.
+// By default Resty will set content length for *[bytes.Buffer], *[bytes.Reader], and *[strings.Reader].
 //
-// See [Client.SetContentLength]
-//
-//	client.R().SetContentLength(true)
-//
-// It overrides the value set at the client instance level.
-func (r *Request) SetContentLength(l bool) *Request {
-	r.setContentLength = l
+//	client.R().SetContentLength(4654645)
+func (r *Request) SetContentLength(l int64) *Request {
+	r.ContentLength = l
 	return r
 }
 
