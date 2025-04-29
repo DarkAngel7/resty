@@ -79,6 +79,7 @@ type (
 		log              Logger
 		closed           bool
 		httpClient       *http.Client
+		response         *http.Response
 	}
 
 	callback struct {
@@ -382,6 +383,7 @@ func (es *EventSource) Get() error {
 			return nil
 		}
 		res, err := es.connect()
+		es.response = res
 		if err != nil {
 			return err
 		}
@@ -397,6 +399,10 @@ func (es *EventSource) Close() {
 	es.lock.Lock()
 	defer es.lock.Unlock()
 	es.closed = true
+}
+
+func (es *EventSource) RawResponse() *http.Response {
+	return es.response
 }
 
 func (es *EventSource) enableConnect() {
